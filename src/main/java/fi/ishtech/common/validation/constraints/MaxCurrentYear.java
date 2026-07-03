@@ -20,10 +20,24 @@ import fi.ishtech.common.validation.constraints.MaxCurrentYear.List;
 import fi.ishtech.common.validation.validator.MaxCurrentYearValidator;
 
 /**
- * Validates that a numeric value does not exceed the current calendar year.<br>
- * <br>
- * Supported types are {@code short}, {@code int}, {@code long} and their respective wrapper types.<br>
- * {@code null} elements are considered valid. Use {@code @NotNull} additionally if a null check is required.<br>
+ * Validates that a numeric value does not exceed the current calendar year.
+ *
+ * <p>Supported types are {@code short}, {@code int}, {@code long} and their
+ * respective wrapper types. {@code null} elements are considered valid.
+ * Use {@code @NotNull} additionally if a null check is required.</p>
+ *
+ * <p><b>Usage Examples:</b></p>
+ * <pre>{@code
+ * // The publication year must be less than or equal to the current year
+ * @MaxCurrentYear
+ * private Integer publicationYear;
+ *
+ * // The copyright year must be strictly less than the current year
+ * @MaxCurrentYear(inclusive = false)
+ * private Integer copyrightYear;
+ * }</pre>
+ *
+ * @see MaxCurrentYearValidator
  *
  * @author Muneer Ahmed Syed
  */
