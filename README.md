@@ -1,6 +1,6 @@
 # ishtech-validations-java
 
-Reusable Java Bean Validation (Jakarta Validation) constraints.
+Custom Java Bean Validation constraints based on Jakarta Validation.
 
 ## Usage
 
@@ -44,6 +44,7 @@ Example, on a POJO field:
 ```java
 public class Book {
 
+	@NotNull
 	@Min(1900)
 	@MaxCurrentYear
 	private Integer publicationYear;

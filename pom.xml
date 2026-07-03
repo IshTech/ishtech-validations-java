@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>ishtech-validations-java</name>
-	<description>Reusable Java Bean Validation (Jakarta Validation) constraints</description>
+	<description>Custom Java Bean Validation constraints based on Jakarta Validation</description>
 	<url>https://www.ishtech.fi/libs/ishtech-validations-java</url>
 
 	<organization>
