@@ -41,6 +41,15 @@ public @interface MaxCurrentYear {
 	Class<? extends Payload>[] payload() default {};
 
 	/**
+	 * Specifies whether the current year is inclusive or exclusive.
+	 * By default, it is inclusive.
+	 *
+	 * @return {@code true} if the value must be lower or equal to the current year,
+	 *         {@code false} if the value must be lower
+	 */
+	boolean inclusive() default true;
+
+	/**
 	 * Defines several {@code @MaxCurrentYear} constraints on the same element.
 	 *
 	 * @see MaxCurrentYear

@@ -16,8 +16,20 @@ import fi.ishtech.common.validation.constraints.MaxCurrentYear;
  */
 public class MaxCurrentYearValidator implements ConstraintValidator<MaxCurrentYear, Number> {
 
+	private boolean inclusive = true;
+
+	@Override
+	public void initialize(MaxCurrentYear constraintAnnotation) {
+		this.inclusive = constraintAnnotation.inclusive();
+	}
+
 	@Override
 	public boolean isValid(Number value, ConstraintValidatorContext context) {
-		return value == null || value.longValue() <= LocalDate.now().getYear();
+		if (value == null) {
+			return true;
+		}
+
+		long currentYear = LocalDate.now().getYear();
+		return inclusive ? value.longValue() <= currentYear : value.longValue() < currentYear;
 	}
 }

@@ -3,13 +3,26 @@ package fi.ishtech.common.validation.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+import fi.ishtech.common.validation.constraints.MaxCurrentYear;
+
 class MaxCurrentYearValidatorTest {
 
 	private final MaxCurrentYearValidator validator = new MaxCurrentYearValidator();
+
+	@MaxCurrentYear(inclusive = false)
+	private Integer exclusiveField;
+
+	private MaxCurrentYearValidator exclusiveValidator() throws NoSuchFieldException {
+		Field field = getClass().getDeclaredField("exclusiveField");
+		MaxCurrentYearValidator exclusiveValidator = new MaxCurrentYearValidator();
+		exclusiveValidator.initialize(field.getAnnotation(MaxCurrentYear.class));
+		return exclusiveValidator;
+	}
 
 	@Test
 	void nullIsValid() {
@@ -51,4 +64,18 @@ class MaxCurrentYearValidatorTest {
 
 		assertFalse(validator.isValid(farFuture, null));
 	}
+
+	@Test
+	void inclusiveDefaultsToTrueSoCurrentYearIsValid() {
+		assertTrue(validator.isValid(LocalDate.now().getYear(), null));
+	}
+
+	@Test
+	void exclusiveRejectsCurrentYear() throws NoSuchFieldException {
+		int currentYear = LocalDate.now().getYear();
+
+		assertFalse(exclusiveValidator().isValid(currentYear, null));
+		assertTrue(exclusiveValidator().isValid(currentYear - 1, null));
+	}
+
 }
