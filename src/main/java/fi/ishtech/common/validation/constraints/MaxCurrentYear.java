@@ -60,4 +60,5 @@ public @interface MaxCurrentYear {
 	public @interface List {
 		MaxCurrentYear[] value();
 	}
+
 }

@@ -32,4 +32,5 @@ public class MaxCurrentYearValidator implements ConstraintValidator<MaxCurrentYe
 		long currentYear = LocalDate.now().getYear();
 		return inclusive ? value.longValue() <= currentYear : value.longValue() < currentYear;
 	}
+
 }
