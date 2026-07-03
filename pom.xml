@@ -11,7 +11,7 @@
 
 	<name>ishtech-validations-java</name>
 	<description>Reusable Java Bean Validation (Jakarta Validation) constraints</description>
-	<url>https://www.ishtech.fi/projects/ishtech-validations-java</url>
+	<url>https://www.ishtech.fi/libs/ishtech-validations-java</url>
 
 	<organization>
 		<name>IshTech</name>
@@ -51,6 +51,8 @@
 		<jakarta-validation.version>3.1.1</jakarta-validation.version>
 		<junit-jupiter.version>6.0.3</junit-jupiter.version>
 
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 
 		<central-publishing-maven-plugin.version>0.10.0</central-publishing-maven-plugin.version>
@@ -76,6 +78,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -88,6 +91,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
