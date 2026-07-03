@@ -18,6 +18,6 @@ public class MaxCurrentYearValidator implements ConstraintValidator<MaxCurrentYe
 
 	@Override
 	public boolean isValid(Number value, ConstraintValidatorContext context) {
-		return value == null || value.intValue() <= LocalDate.now().getYear();
+		return value == null || value.longValue() <= LocalDate.now().getYear();
 	}
 }

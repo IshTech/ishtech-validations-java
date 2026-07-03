@@ -17,18 +17,12 @@ class MaxCurrentYearValidatorTest {
 	}
 
 	@Test
-	void currentYearIsValid() {
-		assertTrue(validator.isValid(LocalDate.now().getYear(), null));
-	}
+	void intValueIsSupported() {
+		int currentYear = LocalDate.now().getYear();
 
-	@Test
-	void pastYearIsValid() {
+		assertTrue(validator.isValid(currentYear, null));
 		assertTrue(validator.isValid(1999, null));
-	}
-
-	@Test
-	void futureYearIsInvalid() {
-		assertFalse(validator.isValid(LocalDate.now().getYear() + 1, null));
+		assertFalse(validator.isValid(currentYear + 1, null));
 	}
 
 	@Test
@@ -47,5 +41,14 @@ class MaxCurrentYearValidatorTest {
 
 		assertTrue(validator.isValid(currentYear, null));
 		assertFalse(validator.isValid(nextYear, null));
+	}
+
+	@Test
+	void longValueBeyondIntRangeIsInvalid() {
+		// Regression test: narrowing to int (e.g. via Number#intValue()) would overflow and wrap
+		// this value to a small/negative number, incorrectly passing validation.
+		long farFuture = (long) Integer.MAX_VALUE + 1_000L;
+
+		assertFalse(validator.isValid(farFuture, null));
 	}
 }
