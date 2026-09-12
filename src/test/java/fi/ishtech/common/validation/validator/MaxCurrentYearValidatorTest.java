@@ -3,79 +3,150 @@ package fi.ishtech.common.validation.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import fi.ishtech.common.validation.constraints.MaxCurrentYear;
 
 class MaxCurrentYearValidatorTest {
 
-	private final MaxCurrentYearValidator validator = new MaxCurrentYearValidator();
+	private static final int CURRENT_YEAR = LocalDate.now().getYear();
 
-	@MaxCurrentYear(inclusive = false)
-	private Integer exclusiveField;
-
-	private MaxCurrentYearValidator exclusiveValidator() throws NoSuchFieldException {
-		Field field = getClass().getDeclaredField("exclusiveField");
-		MaxCurrentYearValidator exclusiveValidator = new MaxCurrentYearValidator();
-		exclusiveValidator.initialize(field.getAnnotation(MaxCurrentYear.class));
-		return exclusiveValidator;
+	/**
+	 * Creates a validator initialized from the {@code @MaxCurrentYear} on the {@code year} field of the given test class.
+	 */
+	private static MaxCurrentYearValidator validatorFor(Object testClass) throws NoSuchFieldException {
+		MaxCurrentYear annotation = testClass.getClass().getDeclaredField("year").getAnnotation(MaxCurrentYear.class);
+		MaxCurrentYearValidator validator = new MaxCurrentYearValidator();
+		validator.initialize(annotation);
+		return validator;
 	}
 
-	@Test
-	void nullIsValid() {
-		assertTrue(validator.isValid(null, null));
+	@Nested
+	@DisplayName("@MaxCurrentYear (inclusive by default)")
+	class Default {
+
+		@MaxCurrentYear
+		private Integer year;
+
+		@Test
+		@DisplayName("currentYear - 1 is valid")
+		void currentYearMinus1IsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(CURRENT_YEAR - 1, null));
+		}
+
+		@Test
+		@DisplayName("currentYear is valid")
+		void currentYearIsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(CURRENT_YEAR, null));
+		}
+
+		@Test
+		@DisplayName("currentYear + 1 is invalid")
+		void currentYearPlus1IsInvalid() throws NoSuchFieldException {
+			assertFalse(validatorFor(this).isValid(CURRENT_YEAR + 1, null));
+		}
+
 	}
 
-	@Test
-	void intValueIsSupported() {
-		int currentYear = LocalDate.now().getYear();
+	@Nested
+	@DisplayName("@MaxCurrentYear(inclusive = true)")
+	class InclusiveTrue {
 
-		assertTrue(validator.isValid(currentYear, null));
-		assertTrue(validator.isValid(1999, null));
-		assertFalse(validator.isValid(currentYear + 1, null));
+		@MaxCurrentYear(inclusive = true)
+		private Integer year;
+
+		@Test
+		@DisplayName("currentYear - 1 is valid")
+		void currentYearMinus1IsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(CURRENT_YEAR - 1, null));
+		}
+
+		@Test
+		@DisplayName("currentYear is valid")
+		void currentYearIsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(CURRENT_YEAR, null));
+		}
+
+		@Test
+		@DisplayName("currentYear + 1 is invalid")
+		void currentYearPlus1IsInvalid() throws NoSuchFieldException {
+			assertFalse(validatorFor(this).isValid(CURRENT_YEAR + 1, null));
+		}
+
 	}
 
-	@Test
-	void shortValueIsSupported() {
-		short currentYear = (short) LocalDate.now().getYear();
-		short nextYear = (short) (currentYear + 1);
+	@Nested
+	@DisplayName("@MaxCurrentYear(inclusive = false)")
+	class InclusiveFalse {
 
-		assertTrue(validator.isValid(currentYear, null));
-		assertFalse(validator.isValid(nextYear, null));
+		@MaxCurrentYear(inclusive = false)
+		private Integer year;
+
+		@Test
+		@DisplayName("currentYear - 1 is valid")
+		void currentYearMinus1IsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(CURRENT_YEAR - 1, null));
+		}
+
+		@Test
+		@DisplayName("currentYear is invalid")
+		void currentYearIsInvalid() throws NoSuchFieldException {
+			assertFalse(validatorFor(this).isValid(CURRENT_YEAR, null));
+		}
+
+		@Test
+		@DisplayName("currentYear + 1 is invalid")
+		void currentYearPlus1IsInvalid() throws NoSuchFieldException {
+			assertFalse(validatorFor(this).isValid(CURRENT_YEAR + 1, null));
+		}
+
 	}
 
-	@Test
-	void longValueIsSupported() {
-		long currentYear = LocalDate.now().getYear();
-		long nextYear = currentYear + 1;
+	@Nested
+	@DisplayName("@MaxCurrentYear with null, short and long values")
+	class ValueTypes {
 
-		assertTrue(validator.isValid(currentYear, null));
-		assertFalse(validator.isValid(nextYear, null));
-	}
+		@MaxCurrentYear
+		private Integer year;
 
-	@Test
-	void longValueBeyondIntRangeIsInvalid() {
-		// Regression test: narrowing to int (e.g. via Number#intValue()) would overflow and wrap
-		// this value to a small/negative number, incorrectly passing validation.
-		long farFuture = (long) Integer.MAX_VALUE + 1_000L;
+		@Test
+		@DisplayName("null is valid")
+		void nullIsValid() throws NoSuchFieldException {
+			assertTrue(validatorFor(this).isValid(null, null));
+		}
 
-		assertFalse(validator.isValid(farFuture, null));
-	}
+		@Test
+		@DisplayName("short: currentYear is valid, currentYear + 1 is invalid")
+		void shortIsSupported() throws NoSuchFieldException {
+			MaxCurrentYearValidator validator = validatorFor(this);
 
-	@Test
-	void inclusiveDefaultsToTrueSoCurrentYearIsValid() {
-		assertTrue(validator.isValid(LocalDate.now().getYear(), null));
-	}
+			assertTrue(validator.isValid((short) CURRENT_YEAR, null));
+			assertFalse(validator.isValid((short) (CURRENT_YEAR + 1), null));
+		}
 
-	@Test
-	void exclusiveRejectsCurrentYear() throws NoSuchFieldException {
-		int currentYear = LocalDate.now().getYear();
+		@Test
+		@DisplayName("long: currentYear is valid, currentYear + 1 is invalid")
+		void longIsSupported() throws NoSuchFieldException {
+			MaxCurrentYearValidator validator = validatorFor(this);
 
-		assertFalse(exclusiveValidator().isValid(currentYear, null));
-		assertTrue(exclusiveValidator().isValid(currentYear - 1, null));
+			assertTrue(validator.isValid((long) CURRENT_YEAR, null));
+			assertFalse(validator.isValid((long) CURRENT_YEAR + 1, null));
+		}
+
+		@Test
+		@DisplayName("long beyond int range is invalid (no int overflow)")
+		void longBeyondIntRangeIsInvalid() throws NoSuchFieldException {
+			// Regression test: narrowing to int (e.g. via Number#intValue()) would overflow and wrap
+			// this value to a small/negative number, incorrectly passing validation.
+			long farFuture = (long) Integer.MAX_VALUE + 1_000L;
+
+			assertFalse(validatorFor(this).isValid(farFuture, null));
+		}
+
 	}
 
 }
