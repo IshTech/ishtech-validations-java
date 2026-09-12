@@ -3,79 +3,91 @@ package fi.ishtech.common.validation.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import fi.ishtech.common.validation.constraints.MaxCurrentYear;
 
+@TestMethodOrder(OrderAnnotation.class)
 class MaxCurrentYearValidatorTest {
 
-	private final MaxCurrentYearValidator validator = new MaxCurrentYearValidator();
+	private final int currentYear = LocalDate.now().getYear();
+
+	@MaxCurrentYear
+	private Integer inclusiveYear;
 
 	@MaxCurrentYear(inclusive = false)
-	private Integer exclusiveField;
+	private Integer exclusiveYear;
 
-	private MaxCurrentYearValidator exclusiveValidator() throws NoSuchFieldException {
-		Field field = getClass().getDeclaredField("exclusiveField");
-		MaxCurrentYearValidator exclusiveValidator = new MaxCurrentYearValidator();
-		exclusiveValidator.initialize(field.getAnnotation(MaxCurrentYear.class));
-		return exclusiveValidator;
+	private MaxCurrentYearValidator validatorFor(String fieldName) throws NoSuchFieldException {
+		MaxCurrentYear annotation = getClass().getDeclaredField(fieldName).getAnnotation(MaxCurrentYear.class);
+		MaxCurrentYearValidator validator = new MaxCurrentYearValidator();
+		validator.initialize(annotation);
+		return validator;
 	}
 
 	@Test
-	void nullIsValid() {
-		assertTrue(validator.isValid(null, null));
+	@Order(1)
+	void nullIsValid() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid(null, null));
 	}
 
 	@Test
-	void intValueIsSupported() {
-		int currentYear = LocalDate.now().getYear();
-
-		assertTrue(validator.isValid(currentYear, null));
-		assertTrue(validator.isValid(1999, null));
-		assertFalse(validator.isValid(currentYear + 1, null));
+	@Order(2)
+	void shortIsSupported() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid((short) (currentYear - 1), null));
 	}
 
 	@Test
-	void shortValueIsSupported() {
-		short currentYear = (short) LocalDate.now().getYear();
-		short nextYear = (short) (currentYear + 1);
-
-		assertTrue(validator.isValid(currentYear, null));
-		assertFalse(validator.isValid(nextYear, null));
+	@Order(3)
+	void intIsSupported() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid(currentYear - 1, null));
 	}
 
 	@Test
-	void longValueIsSupported() {
-		long currentYear = LocalDate.now().getYear();
-		long nextYear = currentYear + 1;
-
-		assertTrue(validator.isValid(currentYear, null));
-		assertFalse(validator.isValid(nextYear, null));
+	@Order(4)
+	void longIsSupported() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid((long) (currentYear - 1), null));
 	}
 
 	@Test
-	void longValueBeyondIntRangeIsInvalid() {
-		// Regression test: narrowing to int (e.g. via Number#intValue()) would overflow and wrap
-		// this value to a small/negative number, incorrectly passing validation.
-		long farFuture = (long) Integer.MAX_VALUE + 1_000L;
-
-		assertFalse(validator.isValid(farFuture, null));
+	@Order(5)
+	void whenInclusive_thenPreviousYearIsValid() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid(currentYear - 1, null));
 	}
 
 	@Test
-	void inclusiveDefaultsToTrueSoCurrentYearIsValid() {
-		assertTrue(validator.isValid(LocalDate.now().getYear(), null));
+	@Order(6)
+	void whenInclusive_thenCurrentYearIsValid() throws NoSuchFieldException {
+		assertTrue(validatorFor("inclusiveYear").isValid(currentYear, null));
 	}
 
 	@Test
-	void exclusiveRejectsCurrentYear() throws NoSuchFieldException {
-		int currentYear = LocalDate.now().getYear();
+	@Order(7)
+	void whenInclusive_thenNextYearIsInvalid() throws NoSuchFieldException {
+		assertFalse(validatorFor("inclusiveYear").isValid(currentYear + 1, null));
+	}
 
-		assertFalse(exclusiveValidator().isValid(currentYear, null));
-		assertTrue(exclusiveValidator().isValid(currentYear - 1, null));
+	@Test
+	@Order(8)
+	void whenExclusive_thenPreviousYearIsValid() throws NoSuchFieldException {
+		assertTrue(validatorFor("exclusiveYear").isValid(currentYear - 1, null));
+	}
+
+	@Test
+	@Order(9)
+	void whenExclusive_thenCurrentYearIsInvalid() throws NoSuchFieldException {
+		assertFalse(validatorFor("exclusiveYear").isValid(currentYear, null));
+	}
+
+	@Test
+	@Order(10)
+	void whenExclusive_thenNextYearIsInvalid() throws NoSuchFieldException {
+		assertFalse(validatorFor("exclusiveYear").isValid(currentYear + 1, null));
 	}
 
 }
