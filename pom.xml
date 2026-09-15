@@ -9,7 +9,7 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>ishtech-validations-java</name>
+	<name>ishtech-validations</name>
 	<description>Custom Java Bean Validation constraints based on Jakarta Validation</description>
 	<url>https://www.ishtech.fi/libs/ishtech-validations-java</url>
 
