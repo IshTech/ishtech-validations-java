@@ -23,15 +23,9 @@ Custom Java Bean Validation constraints based on Jakarta Validation.
 implementation("fi.ishtech.common:ishtech-validations:${ishtechValidationsVersion}")
 ```
 
-## Deploy to Sonatype Central
+### Code Samples
 
-```sh
-./mvnw clean deploy -P gpg -P central-publishing
-```
-
-## Constraints
-
-### `@MaxCurrentYear`
+#### `@MaxCurrentYear`
 
 Validates that a numeric value does not exceed the current calendar year.
 
@@ -53,4 +47,30 @@ public class Book {
 	private Integer copyrightYear;
 
 }
+```
+
+## Build
+
+This is a library; it **does not run** as a standalone application.
+
+### Maven
+
+#### Local Maven Build
+
+- Build without tests
+
+```sh
+./mvnw clean install -DskipTests
+```
+
+- Build with Junit tests
+
+```sh
+./mvnw clean install
+```
+
+## Deploy to Sonatype Central
+
+```sh
+./mvnw clean deploy -P gpg -P central-publishing
 ```
