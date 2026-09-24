@@ -7,7 +7,7 @@ The owner's standing instructions are in `.claude/rules/` (`owner-workflow.md`, 
 - It's a library with no runnable application (`pom.xml` has no Spring Boot plugin, and there is no application class), so it has only test Level 1 of its own.
 - Dependent tests apply (`rules/build-and-test.md`, section "Dependent tests"): they confirm that a change here doesn't break the projects that use `ishtech-validations-java` and has the intended effect in them.
   - None of the owner's other libraries depends on it (`rules/repositories.md`), so there is no default dependent; the owner names one when dependent tests are needed.
-  - `ishtech-validations-java` is public on Maven Central (`README.md`, section "Deploy to Sonatype Central"), so it may have other dependents that nobody can list.
+  - `ishtech-validations-java` is public on Maven Central (`README.md`, section "Publish to Maven Central"), so it may have other dependents that nobody can list.
 
 ## Read the doc before doing the thing
 The docs are the source of truth. Don't guess commands: open the matching file and section first, and follow its links.
@@ -16,7 +16,8 @@ The docs are the source of truth. Don't guess commands: open the matching file a
 |---|---|
 | work out what the library does and how consumers add it | `README.md`, the introduction and section "Usage", including subsection "Code Samples" |
 | run test Level 1 (build with tests) | `README.md`, section "Build", subsection "Local Maven Build" |
-| publish (only when the owner asks) | `README.md`, section "Deploy to Sonatype Central" |
+| check the default JDK version or the other supported JDK versions | `README.md`, section "Tech stack"; for the `dev-jdkNN` branches and their releases, `rules/versions-and-releases.md`, section "JDK variants" |
+| publish (only when the owner asks) | `README.md`, section "Publish to Maven Central" |
 | change the version or anything release-related, or check what CI enforces | `.github/workflows/cicd.yml` (`README.md` has no CI section yet) |
 | report or fix a bug | `KNOWN-ISSUES.md` (doesn't exist yet; create it as `rules/documentation.md` describes when the first issue is recorded) |
 
