@@ -85,3 +85,7 @@ This is a library; it **does not run** as a standalone application.
   ```sh
   ./mvnw clean deploy -P gpg -P central-publishing
   ```
+
+## Known Issues
+
+See [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
